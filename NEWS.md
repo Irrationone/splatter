@@ -1,3 +1,23 @@
+## Version 1.5.3 (2018-08-30)
+
+* Fix installation instructions
+
+## Version 1.5.3 (2018-08-20)
+
+* Fix bug in BASiCSEstimate when no spike-ins provided
+
+### Version 1.5.2.9000 (2018-08-16)
+
+* Add missing regression argument to BASiCSEstimate
+* Add new BASiCS tests
+
+## Version 1.5.2 (2018-08-16)
+
+* Fix bug in getLNormFactors when reversing factors less than one
+* Update documentation to new Roxygen version (6.1.0)
+* Change varible name in vignette for compatibility with scater
+* Add suggested package checks to tests
+
 ## Version 1.5.1 (2018-06-12)
 
 * Fix normality testing error in splatEstLib
@@ -7,6 +27,15 @@
 ## Version 1.5.0 (2018-05-02)
 
 * Bioconductor 3.7 devel
+
+## Version 1.4.3 (2018-08-20)
+
+* Fix bug in BASiCSEstimate when no spike-ins provided
+
+## Version 1.4.2 (2018-08-16)
+
+* Add missing regression argument to BASiCSEstimate
+* Add new BASiCS tests
 
 ## Version 1.4.1 (2018-06-12)
 
