@@ -44,6 +44,12 @@ setValidity("SplatParams", function(object) {
                 de.facLoc = checkNumeric(v$de.facLoc, len = nGroups),
                 de.facScale = checkNumeric(v$de.facScale, lower = 0,
                                            len = nGroups),
+                de.facNu = checkNumeric(v$de.facNu, lower = 0,
+                                        len = nGroups),
+                de.min = checkNumeric(v$de.min, lower = 0,
+                                      len = nGroups),
+                de.max = checkNumeric(v$de.max, lower = 0,
+                                      len = nGroups),
                 bcv.common = checkNumber(v$bcv.common, lower = 0),
                 bcv.df = checkNumber(v$bcv.df, lower = 0),
                 dropout.type = checkCharacter(v$dropout.type, len = 1,
@@ -189,7 +195,10 @@ setMethod("show", "SplatParams", function(object) {
                "Diff expr:"      = c("[Probability]"  = "de.prob",
                                      "[Down Prob]"    = "de.downProb",
                                      "[Location]"     = "de.facLoc",
-                                     "[Scale]"        = "de.facScale"),
+                                     "[Scale]"        = "de.facScale",
+                                     "[Nu]"           = "de.facNu",
+                                     "[Min]"          = "de.min",
+                                     "[Max]"          = "de.max"),
                "BCV:"            = c("(Common Disp)"  = "bcv.common",
                                      "(DoF)"          = "bcv.df"),
                "Dropout:"        = c("[Type]"         = "dropout.type",
@@ -216,7 +225,7 @@ setMethod("expandParams", "SplatParams", function(object) {
 
     n <- getParam(object, "nGroups")
 
-    vectors <- c("de.prob", "de.downProb", "de.facLoc", "de.facScale",
+    vectors <- c("de.prob", "de.downProb", "de.facLoc", "de.facScale", "de.facNu", "de.min", "de.max",
                  "path.from", "path.length", "path.skew")
 
     object <- callNextMethod(object, vectors, n)

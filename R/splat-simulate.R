@@ -417,13 +417,19 @@ splatSimGroupDE <- function(sim, params) {
     de.downProb <- getParam(params, "de.downProb")
     de.facLoc <- getParam(params, "de.facLoc")
     de.facScale <- getParam(params, "de.facScale")
+    de.facNu <- getParam(params, "de.facNu")
+    de.max <- getParam(params, "de.max")
+    de.min <- getParam(params, "de.min")
     means.gene <- rowData(sim)$GeneMean
-
+    
     for (idx in seq_len(nGroups)) {
-        de.facs <- getLNormFactors(nGenes, de.prob[idx], de.downProb[idx],
-                                   de.facLoc[idx], de.facScale[idx])
-        group.means.gene <- means.gene * de.facs
-        rowData(sim)[[paste0("DEFacGroup", idx)]] <- de.facs
+      # de.facs <- getLNormFactors(nGenes, de.prob[idx], de.downProb[idx],
+      #                            de.facLoc[idx], de.facScale[idx])
+      de.facs <- getExpSttFactors(nGenes, de.prob[idx], de.downProb[idx],
+                                  de.facLoc[idx], de.facScale[idx], de.facNu[idx],
+                                  de.min[idx], de.max[idx])
+      group.means.gene <- means.gene * de.facs
+      rowData(sim)[[paste0("DEFacGroup", idx)]] <- de.facs
     }
 
     return(sim)
@@ -824,6 +830,44 @@ getLNormFactors <- function(n.facs, sel.prob, neg.prob, fac.loc, fac.scale) {
     factors[is.selected] <- facs.selected ^ dir.selected
 
     return(factors)
+}
+
+#' Get exponential of Student's t-factors (i.e. log-Student's t)
+#'
+#' Randomly generate multiplication factors from a log-Stt distribution.
+#'
+#' @param n.facs Number of factors to generate.
+#' @param sel.prob Probability that a factor will be selected to be different
+#'        from 1.
+#' @param neg.prob Probability that a selected factor is less than one.
+#' @param fac.loc Location parameter for the log-Stt distribution.
+#' @param fac.scale Scale factor for the log-Stt distribution.
+#' @param fac.nu Dispersion parameter for the log-Stt distribution.
+#' @param fac.min Minimum fold change value
+#' @param fac.max Maximum fold change value
+#'
+#' @return Vector containing generated factors.
+#'
+#' @importFrom stats rbinom rlnorm
+getExpSttFactors <- function(n.facs, sel.prob, neg.prob, fac.loc, fac.scale, fac.nu,
+                             fac.min, fac.max) {
+  
+  is.selected <- as.logical(rbinom(n.facs, 1, sel.prob))
+  n.selected <- sum(is.selected)
+  dir.selected <- (-1) ^ rbinom(n.selected, 1, neg.prob)
+  
+  # Simulate from truncated Student's t distribution
+  facs.selected <- crch::rtt(n = n.selected, location = fac.loc, scale = fac.scale,
+                             df = fac.nu, left = 0, right = Inf)
+  facs.selected <- exp(facs.selected)
+  # Threshold fold changes
+  facs.selected[facs.selected < fac.min] <- fac.min
+  facs.selected[facs.selected > fac.max] <- fac.max
+  
+  factors <- rep(1, n.facs)
+  factors[is.selected] <- facs.selected ^ dir.selected
+  
+  return(factors)
 }
 
 #' Get path order
